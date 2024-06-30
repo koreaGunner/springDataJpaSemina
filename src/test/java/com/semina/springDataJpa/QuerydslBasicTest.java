@@ -221,6 +221,7 @@ public class QuerydslBasicTest {
 
     @Test
     public void aggregation() {
+//      Tuple : 프로젝션 대상이 둘 이상일 때 사용
         List<Tuple> result = queryFactory
                 .select(
                         member.count(),
