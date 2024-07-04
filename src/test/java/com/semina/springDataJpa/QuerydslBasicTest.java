@@ -11,9 +11,7 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.semina.springDataJpa.dto.MemberDto;
-import com.semina.springDataJpa.dto.QMemberDto;
-import com.semina.springDataJpa.dto.UserDto;
+import com.semina.springDataJpa.dto.*;
 import com.semina.springDataJpa.entity.Member;
 import com.semina.springDataJpa.entity.QMember;
 import com.semina.springDataJpa.entity.Team;
@@ -27,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.querydsl.jpa.JPAExpressions.select;
 //중요!
@@ -161,6 +160,36 @@ public class QuerydslBasicTest {
                 .selectFrom(member)
                 .fetchCount();
 
+    }
+
+    @Test
+    public void memberTeamDtoJpa() {
+        List<Member> memberList = em.createQuery("select m from Member m join m.team", Member.class)
+                .getResultList();
+
+        List<MemberTeamDto> result = memberList.stream()
+                .map(m -> new MemberTeamDto(m))
+                .collect(Collectors.toList());
+
+        for (MemberTeamDto memberTeamDto : result) {
+            System.out.println("memberTeamDto = " + memberTeamDto);
+        }
+    }
+
+    @Test
+    public void memberTeamDtoQueryDsl() {
+
+        List<MemberTeamDto> result = queryFactory
+                .select(new QMemberTeamDto(member.id, member.username, team.name))
+                .from(member)
+                .join(member.team, team)
+                .fetch();
+
+        for (MemberTeamDto memberTeamDto : result) {
+            System.out.println("memberTeamDto.getMemberId() = " + memberTeamDto.getMemberId());
+            System.out.println("memberTeamDto.getUsername() = " + memberTeamDto.getUsername());
+            System.out.println("memberTeamDto.getTeamName() = " + memberTeamDto.getTeamName());
+        }
     }
 
     /**

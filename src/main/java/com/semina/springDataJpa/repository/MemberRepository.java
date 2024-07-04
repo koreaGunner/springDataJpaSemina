@@ -1,5 +1,6 @@
 package com.semina.springDataJpa.repository;
 
+import com.semina.springDataJpa.dto.MemberDto;
 import com.semina.springDataJpa.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,4 +28,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("select m.username from Member m")
     List<String> findUsernameList();
+
+    @Query("select new com.semina.springDataJpa.dto.MemberTeamDto(m.id, m.username, t.name) from Member m join m.team t")
+    List<MemberDto> findMemberDto();
 }
